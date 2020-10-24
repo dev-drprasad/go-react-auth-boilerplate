@@ -1,0 +1,21 @@
+.login-page {
+  height: 100%;
+  .login-form {
+    width: 95%; // in mobile, looks good
+    max-width: 400px;
+    padding: 32px 48px 16px 48px;
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02), 0 4px 8px rgba(0, 0, 0, 0.04);
+    border-radius: 8px;
+    .logo-wrapper {
+      min-height: 50px;
+      padding: 16px;
+      margin-bottom: 32px;
+      text-align: center;
+      background-color: rgba(33, 213, 210, 0.2);
+    }
+  }
+}
