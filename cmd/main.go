@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -17,16 +16,23 @@ import (
 	pgxpool "github.com/jackc/pgx/v4/pgxpool"
 )
 
+func getEnvDefault(key string, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
+}
+
 func main() {
-	var wait time.Duration
-	var dbHost, dbPort, dbUser, dbPassword, dbName, port string
-	flag.StringVar(&dbHost, "dbHost", "localhost", "")
-	flag.StringVar(&dbName, "dbName", "repoboost", "")
-	flag.StringVar(&dbUser, "dbUser", "repoboost", "")
-	flag.StringVar(&dbPassword, "password", "repoboost", "")
-	flag.StringVar(&dbPort, "dbPort", "5432", "")
-	flag.DurationVar(&wait, "graceful-timeout", time.Second*15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
-	flag.Parse()
+
+	log.SetFlags(log.Ldate | log.Lmicroseconds | log.Lshortfile)
+
+	dbHost := getEnvDefault("DB_HOST", "localhost")
+	dbPort := getEnvDefault("DB_PORT", "5432")
+	dbUser := getEnvDefault("DB_USER", "repoboost")
+	dbPassword := getEnvDefault("DB_PASSWORD", "repoboost")
+	dbName := getEnvDefault("DB_NAME", "repoboost")
+	port := getEnvDefault("PORT", "8000")
 
 	connstr := fmt.Sprintf("host=%s port=%s user=%s "+
 		"password=%s dbname=%s sslmode=disable",
@@ -50,10 +56,6 @@ func main() {
 	v1.HandleFunc("/users", userhandler.GetUsers).Methods(http.MethodGet)
 	v1.HandleFunc("/users", userhandler.CreateUser).Methods(http.MethodPost)
 	v1.HandleFunc("/users", userhandler.GetUser).Methods(http.MethodGet)
-
-	if port = os.Getenv("PORT"); port == "" {
-		port = "8000"
-	}
 
 	srv := &http.Server{
 		Addr: fmt.Sprintf(":%s", port),
@@ -81,7 +83,7 @@ func main() {
 	<-c
 
 	// Create a deadline to wait for.
-	ctx, cancel := context.WithTimeout(context.Background(), wait)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
 	// Doesn't block if no connections, but will otherwise wait
 	// until the timeout deadline.

@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"flag"
 	"fmt"
+	"os"
 	"repoboost/internal/user/model"
 	"repoboost/internal/user/repo"
 	"time"
@@ -18,11 +18,11 @@ var ErrInvalidCredentials = errors.New("invalid credentials")
 var sugar string
 
 func init() {
-	flag.StringVar(&sugar, "sugar", "", "")
-	flag.Parse()
+	var sugar string
+	sugar = os.Getenv("JWT_SECRET")
 
 	if sugar == "" {
-		panic("sugar is empty and it is required by auth serice")
+		panic("env JWT_SECRET is empty and it is required by auth serice")
 	}
 }
 

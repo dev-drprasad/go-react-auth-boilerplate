@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useContext } from "react";
-import { Form, Input, Button, Alert } from "antd";
+import { Form, Input, Button, Alert, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 
 import { AuthContext } from "shared/contexts";
@@ -62,6 +62,12 @@ function Login() {
     if (u?.token) navigate("/");
   }, [u]);
 
+  useEffect(() => {
+    if (status.isError && status.statusCode !== 401) {
+      message.error("Oops! Something went wrong.", 3);
+    }
+  }, [status]);
+
   return (
     <div className="login-page">
       <Form className="login-form white-bg" initialValues={{ remember: true }} onFinish={handleFormSubmit} autoComplete="off">
@@ -74,10 +80,10 @@ function Login() {
         </Form.Item>
         <Alert
           style={{
-            visibility: status.isError ? "visible" : "hidden",
+            visibility: status.isError && status.statusCode === 401 ? "visible" : "hidden",
             marginBottom: 16,
           }}
-          message={status.statusCode === 401 ? "Invalid username or password" : "Oops! Something went wrong"}
+          message="Invalid username or password"
           type="error"
         />
 

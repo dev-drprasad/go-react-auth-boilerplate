@@ -2,10 +2,10 @@ package repo
 
 import (
 	"context"
-	"database/sql"
 	"repoboost/internal/user/model"
 	"strings"
 
+	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/pkg/errors"
 )
@@ -88,7 +88,7 @@ func (repo Repository) GetUserByUsernamePassword(ctx context.Context, username s
 	var user model.User
 	err := repo.db.QueryRow(ctx, stmt, username, password).Scan(&user.ID, &user.Name, &user.Username)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == pgx.ErrNoRows {
 			return nil, ErrNoUserFound
 		}
 		return nil, errors.Wrap(err, "Failed to execute the query")

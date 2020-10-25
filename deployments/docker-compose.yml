@@ -1,0 +1,64 @@
+version: "3"
+services:
+  webapp:
+    image: ${COMPOSE_PROJECT_NAME}-web
+    build:
+      context: ..
+      dockerfile: deployments/web.Dockerfile
+    ports:
+      - ${PORT}:80
+    volumes:
+      - node_modules:/app/node_modules
+    container_name: ${COMPOSE_PROJECT_NAME}-web
+    environment:
+      REACT_APP_API_BASE_URL: http://api:8000
+    tty: true
+    depends_on:
+      - api
+    networks:
+      - repoboost
+  api:
+    image: ${COMPOSE_PROJECT_NAME}-api
+    restart: always
+    build:
+      context: ..
+      dockerfile: deployments/api.Dockerfile
+    container_name: ${COMPOSE_PROJECT_NAME}-api
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+    depends_on:
+      - postgres
+    environment:
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+      DB_HOST: postgres
+      DB_PORT: "5432"
+    tty: true
+    networks:
+      - repoboost
+
+  postgres:
+    image: postgres:13.0-alpine
+    container_name: ${COMPOSE_PROJECT_NAME}-db
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - ${PWD}/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always
+    healthcheck:
+      test: pg_isready -U ${DB_USER}
+      timeout: 10s
+      start_period: 5s
+    networks:
+      - repoboost
+
+volumes:
+  node_modules:
+
+networks:
+  repoboost:
+    driver: bridge
