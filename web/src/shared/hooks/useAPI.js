@@ -107,7 +107,7 @@ export function useFetch(url, opts) {
       });
 
     return () => abortctrl.abort();
-  }, [fresh, opts, rId, url]);
+  }, [fresh, rId, url]); //dont add `opts`, adding will cause two renders when error happens
 
   return [response[0], response[1], refresh];
 }
@@ -125,7 +125,7 @@ export default function useAPI(urlpath, extraOptions) {
         ...extraOptions?.headers,
       },
     }),
-    [extraOptions, user]
+    [extraOptions]
   ); // Don't add `user` . Adding will cause re-render when
   // token change (ex: /login api)
 

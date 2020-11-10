@@ -30,8 +30,8 @@ npm start
 
 Requirements:
 
-- Docker https://docs.docker.com/engine/install/
-- Docker Compose https://docs.docker.com/compose/install/
+- Docker 19: https://docs.docker.com/engine/install/
+- Docker 1.27: Compose https://docs.docker.com/compose/install/
 
 To start whole stack:
 

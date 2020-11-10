@@ -23,6 +23,7 @@ function useLogin() {
   const args = useMemo(() => (body ? ["/api/v1/auth/login", { method: "POST", body: JSON.stringify(body) }] : [undefined, undefined]), [
     body,
   ]);
+
   const [data, status] = useAPI(...args);
   let user;
   if (status.isSuccess) {
@@ -39,7 +40,6 @@ function Login() {
   const [user, status, login] = useLogin();
 
   const handleFormSubmit = (b) => {
-    if (b.currentTarget) return;
     login(b);
   };
 
