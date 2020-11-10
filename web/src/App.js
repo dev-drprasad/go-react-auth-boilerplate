@@ -39,7 +39,7 @@ function App() {
     <AuthContext.Provider value={[user, login, logout]}>
       <Router id="router">
         <Login path="login" />
-        <ProtectedRoute user={user} component={Main} path="/">
+        <ProtectedRoute user={user} logout={logout} component={Main} path="/">
           <Home path="/" />
           <NotFound default />
         </ProtectedRoute>
